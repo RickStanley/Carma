@@ -21,7 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  sealed_unions: "^3.0.2+2"
+  assets_audio_player: ^2.0.10
   flutter:
     sdk: flutter
 
@@ -48,6 +48,7 @@ flutter:
   assets:
     - assets/stickmen/
     - assets/karmas/
+    - assets/effects/gavel.ogg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

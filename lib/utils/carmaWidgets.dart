@@ -38,10 +38,13 @@ class EntityEmpty extends StatelessWidget {
       child: Row(
         children: [
           // @todo Change to Carma Icons
-          Icon(
-            Icons.account_circle,
-            size: 50,
-            color: Color(0xff212121),
+          Hero(
+            tag: "entity-icon",
+            child: Icon(
+              Icons.account_circle,
+              size: 50,
+              color: Color(0xff212121),
+            ),
           ),
           SizedBox(
             width: 11,
@@ -54,7 +57,6 @@ class EntityEmpty extends StatelessWidget {
           Icon(
             Icons.add_circle_outline,
             size: 35,
-            color: Color(0xff212121),
           )
         ],
       ),

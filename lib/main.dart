@@ -1,3 +1,4 @@
+import 'package:carma/entity_setup/setup.dart';
 import 'package:carma/start.dart';
 import 'package:carma/home.dart';
 import 'package:carma/intro/step2.dart';
@@ -38,6 +39,7 @@ class CarmaApp extends StatelessWidget {
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        cursorColor: DA_COLOR,
         textTheme: TextTheme(
           headline1: TextStyle(
             fontSize: 28.0,
@@ -51,6 +53,11 @@ class CarmaApp extends StatelessWidget {
           ),
           headline3: TextStyle(
             fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+            color: DARK_COLOR,
+          ),
+          headline4: TextStyle(
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
             color: DARK_COLOR,
           ),
@@ -73,6 +80,7 @@ class CarmaApp extends StatelessWidget {
         IntroStep2.ROUTE_NAME: (context) => IntroStep2(),
         IntroStep3.ROUTE_NAME: (context) => IntroStep3(),
         Home.ROUTE_NAME: (context) => Home(),
+        EntitySetup.ROUTE_NAME: (context) => EntitySetup()
       },
       debugShowCheckedModeBanner: false,
     );
