@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 
 enum KarmaType { Good, Neutral, Evil }
@@ -14,6 +16,8 @@ class Karma {
     @required this.description,
     @required this.titles,
   });
+
+  judge() => titles[Random().nextInt(titles.length)];
 }
 
 const karmas = [

@@ -1,3 +1,4 @@
+import 'package:carma/data/entity.dart';
 import 'package:carma/data/routesArguments.dart';
 import 'package:carma/entity_setup/setup.dart';
 import 'package:carma/utils/carmaWidgets.dart';
@@ -5,9 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import "package:assets_audio_player/assets_audio_player.dart";
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   static const ROUTE_NAME = "/home";
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final assetsAudioPlayer = AssetsAudioPlayer();
+
+  List<Entity> _entities = [];
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +44,34 @@ class Home extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            ListView.separated(
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                final currentEntity = _entities[index];
+
+                return EntityCard(
+                  name: currentEntity.name,
+                  currentJudgment: currentEntity.currentJudgment,
+                  icon: availableKarmas
+                      .firstWhere(
+                          (karmaCard) => karmaCard.karma == currentEntity.karma)
+                      .entityIcon,
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  color: Colors.transparent,
+                  height: 10.0,
+                );
+              },
+              itemCount: _entities.length,
+            ),
+            Visibility(
+              visible: _entities.length != 0,
+              child: Divider(
+                height: 10.0,
+              ),
+            ),
             GestureDetector(
               onTap: () async {
                 KingsJusticeResult veredict = await _kingsJustice(context);
@@ -42,9 +79,16 @@ class Home extends StatelessWidget {
                   assetsAudioPlayer.play();
                   print(
                       "Karma: ${veredict.karma.typeName} | Entity name: ${veredict.entityName}");
+                  setState(() {
+                    _entities.add(Entity(
+                      veredict.entityName,
+                      karma: veredict.karma,
+                      initalReason: veredict.reason,
+                    ));
+                  });
                 }
               },
-              child: EntityEmpty(),
+              child: EntityCardEmpty(),
             ),
           ],
         ),

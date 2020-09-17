@@ -19,8 +19,10 @@ class _EntitySetupState extends State<EntitySetup> {
 
   bool _validateName = false;
   bool _validateEntityType = false;
-  Karma _selectedEntity;
+  Karma _selectedKarma;
   int _textFieldHeight = 1;
+
+  String heroTag;
 
   @override
   void initState() {
@@ -57,12 +59,17 @@ class _EntitySetupState extends State<EntitySetup> {
                 Row(
                   children: [
                     Hero(
-                      tag: "entity-icon",
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 50,
-                        color: Color(0xff212121),
-                      ),
+                      tag: heroTag ?? "entity-icon",
+                      child: _selectedKarma != null
+                          ? availableKarmas
+                              .firstWhere((karmaCard) =>
+                                  karmaCard.karma == _selectedKarma)
+                              .entityIcon
+                          : Icon(
+                              Icons.account_circle,
+                              size: 50,
+                              color: Color(0xff212121),
+                            ),
                     ),
                     VerticalDivider(
                       width: 18.0,
@@ -109,13 +116,13 @@ class _EntitySetupState extends State<EntitySetup> {
                       GestureDetector(
                     onTap: () => {
                       setState(() {
-                        _selectedEntity = availableKarmas[index].karma;
+                        _selectedKarma = availableKarmas[index].karma;
                         _validateEntityType = false;
                       })
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
-                      color: _selectedEntity == availableKarmas[index].karma
+                      color: _selectedKarma == availableKarmas[index].karma
                           ? DA_COLOR.withOpacity(0.4)
                           : Colors.transparent,
                       child: availableKarmas[index],
@@ -147,8 +154,8 @@ class _EntitySetupState extends State<EntitySetup> {
                   height: 26.0,
                 ),
                 Visibility(
-                  visible: _selectedEntity?.type == KarmaType.Good ||
-                      _selectedEntity?.type == KarmaType.Evil,
+                  visible: _selectedKarma?.type == KarmaType.Good ||
+                      _selectedKarma?.type == KarmaType.Evil,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -165,7 +172,7 @@ class _EntitySetupState extends State<EntitySetup> {
                           text: "Care to explain why this entity is ",
                           children: [
                             TextSpan(
-                              text: _selectedEntity?.typeName,
+                              text: _selectedKarma?.typeName,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -205,18 +212,22 @@ class _EntitySetupState extends State<EntitySetup> {
                     "Done",
                     onTap: () {
                       if (_entityNameController.text.isEmpty ||
-                          _selectedEntity == null) {
+                          _selectedKarma == null) {
                         setState(() {
                           _validateName = _entityNameController.text.isEmpty;
-                          _validateEntityType = _selectedEntity == null;
+                          _validateEntityType = _selectedKarma == null;
                         });
                       } else {
+                        setState(() {
+                          heroTag = _entityNameController.text
+                              .replaceAll(RegExp(" +"), "_");
+                        });
                         Navigator.pop(
                           context,
                           KingsJusticeResult(
-                            _selectedEntity,
-                            _entityNameController.text,
-                            _reasonTextController.text,
+                            _selectedKarma,
+                            _entityNameController.text.trim(),
+                            _reasonTextController.text.trim(),
                           ),
                         );
                       }

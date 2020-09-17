@@ -29,7 +29,62 @@ class CarmaButton extends StatelessWidget {
   }
 }
 
-class EntityEmpty extends StatelessWidget {
+class EntityCard extends StatelessWidget {
+  final String name;
+
+  final String currentJudgment;
+
+  final Image icon;
+
+  const EntityCard({
+    Key key,
+    @required this.name,
+    @required this.currentJudgment,
+    @required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 9,
+        horizontal: 7,
+      ),
+      color: Color(0xfff5f5f5),
+      child: Row(
+        children: [
+          Hero(
+            tag: this.name.replaceAll(RegExp(" +"), "_"),
+            child: icon,
+          ),
+          SizedBox(
+            width: 11,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: Theme.of(context).textTheme.headline3,
+              ),
+              Text(
+                currentJudgment,
+                style: TextStyle(
+                  color: Color(0xff55585A),
+                ),
+              ),
+            ],
+          ),
+          Spacer(),
+          Icon(Icons.more_horiz),
+        ],
+      ),
+    );
+  }
+}
+
+// @todo Merge layout of "EntityType" and "EntityEmpty" with "EntityCard"
+class EntityCardEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,11 +119,12 @@ class EntityEmpty extends StatelessWidget {
   }
 }
 
-class EntityType extends StatelessWidget {
+// @todo Merge layout of "EntityType" and "EntityEmpty" with "EntityCard"
+class EntityCardType extends StatelessWidget {
   final Image entityIcon;
   final Karma karma;
 
-  const EntityType({
+  const EntityCardType({
     Key key,
     @required this.entityIcon,
     @required this.karma,
@@ -102,9 +158,9 @@ class EntityType extends StatelessWidget {
   }
 }
 
-var availableKarmas = List<EntityType>.unmodifiable([
+var availableKarmas = List<EntityCardType>.unmodifiable([
   for (var carma in karmas)
-    EntityType(
+    EntityCardType(
       entityIcon:
           Image.asset("assets/karmas/${carma.typeName.toLowerCase()}.webp"),
       karma: carma,

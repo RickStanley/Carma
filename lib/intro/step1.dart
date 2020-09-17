@@ -20,7 +20,7 @@ class IntroStep1 extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                EntityEmpty(),
+                EntityCardEmpty(),
                 SizedBox(
                   height: 26,
                 ),
@@ -56,7 +56,7 @@ class IntroStep1 extends StatelessWidget {
                 SizedBox(
                   height: 22,
                 ),
-                EntityEmpty(),
+                EntityCardEmpty(),
               ],
             ),
           ),
