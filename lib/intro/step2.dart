@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 
 class IntroStep2 extends StatelessWidget {
   static const ROUTE_NAME = "/intro/step/2";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,46 +21,8 @@ class IntroStep2 extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/karmas/good.webp",
-                          width: 100.0,
-                          fit: BoxFit.contain,
-                        ),
-                        SizedBox(
-                          height: 12.0,
-                        ),
-                        Text(
-                          "Good Karma",
-                          style: Theme.of(context).textTheme.headline2,
-                        ),
-                      ],
-                    ),
-                    VerticalDivider(
-                      width: 50,
-                    ),
-                    Column(
-                      children: [
-                        Image.asset(
-                          "assets/karmas/evil.webp",
-                          width: 100.0,
-                          fit: BoxFit.contain,
-                        ),
-                        SizedBox(
-                          height: 12.0,
-                        ),
-                        Text(
-                          "Evil Karma",
-                          style: Theme.of(context).textTheme.headline2,
-                        ),
-                      ],
-                    ),
-                  ],
+                RuleOfTwo(
+                  iconSize: Size(100.0, 100.0),
                 ),
                 SizedBox(
                   height: 23.0,

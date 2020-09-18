@@ -1,3 +1,4 @@
+import 'package:carma/data/deed.dart';
 import 'package:carma/data/stances.dart';
 import 'package:carma/main.dart';
 import 'package:flutter/material.dart';
@@ -6,41 +7,59 @@ import 'package:flutter/widgets.dart';
 class CarmaButton extends StatelessWidget {
   final String text;
   final void Function() onTap;
+  final bool outline;
+  final bool disabled;
 
-  const CarmaButton(this.text, {Key key, this.onTap}) : super(key: key);
+  const CarmaButton(this.text,
+      {Key key, this.onTap, this.outline = false, this.disabled = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: this.onTap,
-      child: Container(
-        color: Theme.of(context).primaryColor,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-        child: Text(
-          this.text,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: DARK_COLOR,
-          ),
+    final content = Container(
+      decoration: BoxDecoration(
+          color: this.outline
+              ? Colors.transparent
+              : Theme.of(context).primaryColor,
+          border: this.outline
+              ? Border.all(
+                  color: Theme.of(context).primaryColor,
+                )
+              : null),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+      child: Text(
+        this.text,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: DARK_COLOR,
         ),
       ),
     );
+    return this.disabled
+        ? Opacity(
+            opacity: 0.3,
+            child: content,
+          )
+        : GestureDetector(
+            onTap: this.onTap,
+            child: content,
+          );
   }
 }
 
 class EntityCard extends StatelessWidget {
   final String name;
-
   final String currentJudgment;
-
   final Image icon;
+  final void Function() onMore;
 
   const EntityCard({
     Key key,
     @required this.name,
     @required this.currentJudgment,
     @required this.icon,
+    this.onMore,
   }) : super(key: key);
 
   @override
@@ -76,7 +95,10 @@ class EntityCard extends StatelessWidget {
             ],
           ),
           Spacer(),
-          Icon(Icons.more_horiz),
+          GestureDetector(
+            onTap: onMore,
+            child: Icon(Icons.more_horiz),
+          ),
         ],
       ),
     );
@@ -121,12 +143,12 @@ class EntityCardEmpty extends StatelessWidget {
 
 // @todo Merge layout of "EntityType" and "EntityEmpty" with "EntityCard"
 class EntityCardType extends StatelessWidget {
-  final Image entityIcon;
+  final Image karmaIcon;
   final Karma karma;
 
   const EntityCardType({
     Key key,
-    @required this.entityIcon,
+    @required this.karmaIcon,
     @required this.karma,
   }) : super(key: key);
 
@@ -134,7 +156,7 @@ class EntityCardType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        entityIcon,
+        karmaIcon,
         SizedBox(
           width: 18,
         ),
@@ -161,7 +183,7 @@ class EntityCardType extends StatelessWidget {
 var availableKarmas = List<EntityCardType>.unmodifiable([
   for (var carma in karmas)
     EntityCardType(
-      entityIcon:
+      karmaIcon:
           Image.asset("assets/karmas/${carma.typeName.toLowerCase()}.webp"),
       karma: carma,
     )
@@ -225,4 +247,129 @@ class CarmaIntroAppBar extends AppBar {
             ),
           ),
         );
+}
+
+class RuleOfTwo extends StatelessWidget {
+  final Size iconSize;
+  final double gapSize;
+  final TextStyle labelStyle;
+  final Function(KarmaType) notifier;
+  final KarmaType selectedKarma;
+
+  const RuleOfTwo(
+      {Key key,
+      this.iconSize,
+      this.gapSize = 50,
+      this.labelStyle,
+      this.notifier,
+      this.selectedKarma})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final style = labelStyle ?? Theme.of(context).textTheme.headline2;
+    final hasNotifier = this.notifier != null;
+
+    final goodColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+          "assets/karmas/good.webp",
+          width: iconSize?.width,
+          height: iconSize?.height,
+          fit: BoxFit.contain,
+        ),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Good Karma",
+          style: style,
+        ),
+      ],
+    );
+
+    final evilColumn = Column(
+      children: [
+        Image.asset(
+          "assets/karmas/evil.webp",
+          width: iconSize?.width,
+          height: iconSize?.height,
+          fit: BoxFit.contain,
+        ),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Evil Karma",
+          style: style,
+        ),
+      ],
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        hasNotifier
+            ? GestureDetector(
+                onTap: () {
+                  notifier(KarmaType.Good);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5.0),
+                  color: selectedKarma == KarmaType.Good
+                      ? Theme.of(context).primaryColor.withOpacity(0.5)
+                      : Colors.transparent,
+                  child: goodColumn,
+                ),
+              )
+            : goodColumn,
+         VerticalDivider(
+          width: this.gapSize,
+        ),
+        hasNotifier
+            ? GestureDetector(
+                onTap: () {
+                  notifier(KarmaType.Evil);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5.0),
+                  color: selectedKarma == KarmaType.Evil
+                      ? Theme.of(context).primaryColor.withOpacity(0.5)
+                      : Colors.transparent,
+                  child: evilColumn,
+                ),
+              )
+            : evilColumn,
+      ],
+    );
+  }
+}
+
+class DeedCard extends StatelessWidget {
+  final Deed deed;
+
+  const DeedCard({Key key, this.deed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = deed.karmaType == KarmaType.Evil
+        ? 0xffD04747
+        : 0xff69DA4C;
+
+    return Row(
+      children: [
+        Text(
+          deed.description,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+        Text(
+          deed.formattedPoints,
+          style: TextStyle(
+            color: Color(color),
+          ),
+        ),
+      ],
+    );
+  }
 }

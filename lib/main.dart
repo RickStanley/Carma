@@ -1,4 +1,6 @@
+import 'package:carma/entityEdit.dart';
 import 'package:carma/entity_setup/setup.dart';
+import 'package:carma/newDeed.dart';
 import 'package:carma/start.dart';
 import 'package:carma/home.dart';
 import 'package:carma/intro/step2.dart';
@@ -80,7 +82,9 @@ class CarmaApp extends StatelessWidget {
         IntroStep2.ROUTE_NAME: (context) => IntroStep2(),
         IntroStep3.ROUTE_NAME: (context) => IntroStep3(),
         Home.ROUTE_NAME: (context) => Home(),
-        EntitySetup.ROUTE_NAME: (context) => EntitySetup()
+        EntitySetup.ROUTE_NAME: (context) => EntitySetup(),
+        EntityEdit.ROUTE_NAME: (context) => EntityEdit(),
+        NewDeed.ROUTE_NAME: (context) => NewDeed(),
       },
       debugShowCheckedModeBanner: false,
     );

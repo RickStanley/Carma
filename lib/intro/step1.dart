@@ -1,3 +1,4 @@
+import 'package:carma/data/stances.dart';
 import 'package:carma/intro/step2.dart';
 import 'package:carma/utils/carmaWidgets.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/widgets.dart';
 
 class IntroStep1 extends StatelessWidget {
   static const ROUTE_NAME = "/intro/step/1";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +58,14 @@ class IntroStep1 extends StatelessWidget {
                 SizedBox(
                   height: 22,
                 ),
-                EntityCardEmpty(),
+                EntityCard(
+                  name: "Julius Caesar",
+                  currentJudgment: karmas.first.judge(),
+                  icon: availableKarmas
+                      .firstWhere(
+                          (karmaCard) => karmaCard.karma == karmas.first)
+                      .karmaIcon,
+                )
               ],
             ),
           ),

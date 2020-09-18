@@ -1,5 +1,6 @@
 import 'package:carma/data/entity.dart';
 import 'package:carma/data/routesArguments.dart';
+import 'package:carma/entityEdit.dart';
 import 'package:carma/entity_setup/setup.dart';
 import 'package:carma/utils/carmaWidgets.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,16 @@ class _HomeState extends State<Home> {
                   icon: availableKarmas
                       .firstWhere(
                           (karmaCard) => karmaCard.karma == currentEntity.karma)
-                      .entityIcon,
+                      .karmaIcon,
+                  onMore: () {
+                    Navigator.pushNamed(
+                      context,
+                      EntityEdit.ROUTE_NAME,
+                      arguments: EntityEditArguments(
+                        currentEntity,
+                      ),
+                    );
+                  },
                 );
               },
               separatorBuilder: (BuildContext context, int index) {

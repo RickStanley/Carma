@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  spinner_input: ^0.1.2
   assets_audio_player: ^2.0.10
   flutter:
     sdk: flutter

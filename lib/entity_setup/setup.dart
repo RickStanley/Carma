@@ -64,7 +64,7 @@ class _EntitySetupState extends State<EntitySetup> {
                           ? availableKarmas
                               .firstWhere((karmaCard) =>
                                   karmaCard.karma == _selectedKarma)
-                              .entityIcon
+                              .karmaIcon
                           : Icon(
                               Icons.account_circle,
                               size: 50,
@@ -79,6 +79,7 @@ class _EntitySetupState extends State<EntitySetup> {
                         autocorrect: false,
                         controller: _entityNameController,
                         enableSuggestions: false,
+                        textCapitalization: TextCapitalization.sentences,
                         autofillHints: null,
                         style: TextStyle(
                           fontSize: 24.0,
