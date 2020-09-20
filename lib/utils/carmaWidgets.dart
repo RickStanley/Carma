@@ -1,8 +1,10 @@
 import 'package:carma/data/deed.dart';
-import 'package:carma/data/stances.dart';
+import 'package:carma/data/entity.dart';
+import 'package:carma/data/karmas.dart';
 import 'package:carma/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CarmaButton extends StatelessWidget {
   final String text;
@@ -10,9 +12,13 @@ class CarmaButton extends StatelessWidget {
   final bool outline;
   final bool disabled;
 
-  const CarmaButton(this.text,
-      {Key key, this.onTap, this.outline = false, this.disabled = false})
-      : super(key: key);
+  const CarmaButton(
+    this.text, {
+    Key key,
+    this.onTap,
+    this.outline = false,
+    this.disabled = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,56 +55,77 @@ class CarmaButton extends StatelessWidget {
 }
 
 class EntityCard extends StatelessWidget {
-  final String name;
-  final String currentJudgment;
-  final Image icon;
-  final void Function() onMore;
+  final Entity entity;
+  final void Function() trailingTap;
+  final bool featured;
+  final Icon trailingIcon;
 
-  const EntityCard({
+  const EntityCard(
+    this.entity, {
     Key key,
-    @required this.name,
-    @required this.currentJudgment,
-    @required this.icon,
-    this.onMore,
+    this.featured = false,
+    this.trailingTap,
+    this.trailingIcon,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = Theme.of(context).textTheme;
+
+    final padding = featured
+        ? null
+        : const EdgeInsets.symmetric(
+            vertical: 9,
+            horizontal: 7,
+          );
+    final bgColor = featured ? Colors.transparent : Color(0xfff5f5f5);
+    final spaceBetweenTitles = featured ? 11.0 : 18.0;
+    final nameStyle =
+        featured ? currentTheme.headline1 : currentTheme.headline3;
+    final judgmentStyle = featured
+        ? currentTheme.headline4.copyWith(
+            color: Color(0xff55585A),
+            fontWeight: FontWeight.normal,
+          )
+        : TextStyle(
+            color: Color(0xff55585A),
+          );
     return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: 9,
-        horizontal: 7,
-      ),
-      color: Color(0xfff5f5f5),
+      padding: padding,
+      color: bgColor,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Hero(
-            tag: this.name.replaceAll(RegExp(" +"), "_"),
-            child: icon,
+            // @todo Maybe this will fail at some point, because hashCode is not reliable to be unique
+            tag: entity.hashCode.toString(),
+            child: availableKarmas
+                .firstWhere((karmaCard) => karmaCard.karma == entity.karma)
+                .karmaIcon,
           ),
-          SizedBox(
-            width: 11,
+          VerticalDivider(
+            width: spaceBetweenTitles,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: Theme.of(context).textTheme.headline3,
-              ),
-              Text(
-                currentJudgment,
-                style: TextStyle(
-                  color: Color(0xff55585A),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entity.name,
+                  style: nameStyle,
                 ),
-              ),
-            ],
+                Text(
+                  entity.currentJudgment,
+                  style: judgmentStyle,
+                ),
+              ],
+            ),
           ),
-          Spacer(),
-          GestureDetector(
-            onTap: onMore,
-            child: Icon(Icons.more_horiz),
-          ),
+          if (trailingIcon != null)
+            GestureDetector(
+              onTap: trailingTap,
+              child: trailingIcon,
+            ),
         ],
       ),
     );
@@ -114,13 +141,12 @@ class EntityCardEmpty extends StatelessWidget {
       color: Color(0xfff5f5f5),
       child: Row(
         children: [
-          // @todo Change to Carma Icons
           Hero(
             tag: "entity-icon",
-            child: Icon(
-              Icons.account_circle,
-              size: 50,
-              color: Color(0xff212121),
+            child: SvgPicture.asset(
+              "assets/generic_icons/selection_user.svg",
+              width: 50.0,
+              height: 50.0,
             ),
           ),
           SizedBox(
@@ -143,7 +169,7 @@ class EntityCardEmpty extends StatelessWidget {
 
 // @todo Merge layout of "EntityType" and "EntityEmpty" with "EntityCard"
 class EntityCardType extends StatelessWidget {
-  final Image karmaIcon;
+  final SvgPicture karmaIcon;
   final Karma karma;
 
   const EntityCardType({
@@ -183,8 +209,11 @@ class EntityCardType extends StatelessWidget {
 var availableKarmas = List<EntityCardType>.unmodifiable([
   for (var carma in karmas)
     EntityCardType(
-      karmaIcon:
-          Image.asset("assets/karmas/${carma.typeName.toLowerCase()}.webp"),
+      karmaIcon: SvgPicture.asset(
+        "assets/karmas/${carma.typeName.toLowerCase()}.svg",
+        width: 52.0,
+        height: 38.39,
+      ),
       karma: carma,
     )
 ]);
@@ -256,14 +285,14 @@ class RuleOfTwo extends StatelessWidget {
   final Function(KarmaType) notifier;
   final KarmaType selectedKarma;
 
-  const RuleOfTwo(
-      {Key key,
-      this.iconSize,
-      this.gapSize = 50,
-      this.labelStyle,
-      this.notifier,
-      this.selectedKarma})
-      : super(key: key);
+  const RuleOfTwo({
+    Key key,
+    this.iconSize,
+    this.gapSize = 50,
+    this.labelStyle,
+    this.notifier,
+    this.selectedKarma,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -273,8 +302,8 @@ class RuleOfTwo extends StatelessWidget {
     final goodColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Image.asset(
-          "assets/karmas/good.webp",
+        SvgPicture.asset(
+          "assets/karmas/good.svg",
           width: iconSize?.width,
           height: iconSize?.height,
           fit: BoxFit.contain,
@@ -291,8 +320,8 @@ class RuleOfTwo extends StatelessWidget {
 
     final evilColumn = Column(
       children: [
-        Image.asset(
-          "assets/karmas/evil.webp",
+        SvgPicture.asset(
+          "assets/karmas/evil.svg",
           width: iconSize?.width,
           height: iconSize?.height,
           fit: BoxFit.contain,
@@ -314,6 +343,7 @@ class RuleOfTwo extends StatelessWidget {
             ? GestureDetector(
                 onTap: () {
                   notifier(KarmaType.Good);
+                  FocusScope.of(context).requestFocus(FocusNode());
                 },
                 child: Container(
                   padding: const EdgeInsets.all(5.0),
@@ -324,7 +354,7 @@ class RuleOfTwo extends StatelessWidget {
                 ),
               )
             : goodColumn,
-         VerticalDivider(
+        VerticalDivider(
           width: this.gapSize,
         ),
         hasNotifier
@@ -348,28 +378,44 @@ class RuleOfTwo extends StatelessWidget {
 
 class DeedCard extends StatelessWidget {
   final Deed deed;
+  final Color color;
 
-  const DeedCard({Key key, this.deed}) : super(key: key);
+  const DeedCard({
+    Key key,
+    @required this.deed,
+    this.color,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final color = deed.karmaType == KarmaType.Evil
-        ? 0xffD04747
-        : 0xff69DA4C;
+    final pointsColor = deed.karmaType == KarmaType.Evil
+        ? Color(0xffD04747)
+        : Color(0xff008028);
 
-    return Row(
-      children: [
-        Text(
-          deed.description,
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-        Text(
-          deed.formattedPoints,
-          style: TextStyle(
-            color: Color(color),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5.0),
+      padding: const EdgeInsets.all(10.0),
+      color: color ?? Color(0xfff5f5f5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Text(
+              deed.description,
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
           ),
-        ),
-      ],
+          Text(
+            deed.formattedPoints,
+            style: TextStyle(
+              color: pointsColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 24.0,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

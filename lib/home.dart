@@ -1,7 +1,7 @@
 import 'package:carma/data/entity.dart';
 import 'package:carma/data/routesArguments.dart';
 import 'package:carma/entityEdit.dart';
-import 'package:carma/entity_setup/setup.dart';
+import 'package:carma/entitySetup.dart';
 import 'package:carma/utils/carmaWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -15,16 +15,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final assetsAudioPlayer = AssetsAudioPlayer();
+  final gavelAudioEffect = AssetsAudioPlayer();
 
   List<Entity> _entities = [];
 
   @override
-  Widget build(BuildContext context) {
-    assetsAudioPlayer.open(
+  void initState() {
+    gavelAudioEffect.open(
       Audio("assets/effects/gavel.ogg"),
       autoStart: false,
     );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -41,7 +46,7 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -50,14 +55,8 @@ class _HomeState extends State<Home> {
               itemBuilder: (BuildContext context, int index) {
                 final currentEntity = _entities[index];
 
-                return EntityCard(
-                  name: currentEntity.name,
-                  currentJudgment: currentEntity.currentJudgment,
-                  icon: availableKarmas
-                      .firstWhere(
-                          (karmaCard) => karmaCard.karma == currentEntity.karma)
-                      .karmaIcon,
-                  onMore: () {
+                return GestureDetector(
+                  onTap: () {
                     Navigator.pushNamed(
                       context,
                       EntityEdit.ROUTE_NAME,
@@ -66,6 +65,7 @@ class _HomeState extends State<Home> {
                       ),
                     );
                   },
+                  child: EntityCard(currentEntity),
                 );
               },
               separatorBuilder: (BuildContext context, int index) {
@@ -86,14 +86,14 @@ class _HomeState extends State<Home> {
               onTap: () async {
                 KingsJusticeResult veredict = await _kingsJustice(context);
                 if (veredict != null) {
-                  assetsAudioPlayer.play();
+                  gavelAudioEffect.play();
                   print(
                       "Karma: ${veredict.karma.typeName} | Entity name: ${veredict.entityName}");
                   setState(() {
                     _entities.add(Entity(
                       veredict.entityName,
                       karma: veredict.karma,
-                      initalReason: veredict.reason,
+                      initialReason: veredict.reason,
                     ));
                   });
                 }

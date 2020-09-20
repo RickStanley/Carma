@@ -1,6 +1,6 @@
 import 'package:carma/data/entity.dart';
 
-import 'stances.dart';
+import 'karmas.dart';
 
 class KingsJusticeResult {
   final Karma karma;

@@ -1,15 +1,15 @@
 import 'package:carma/data/deed.dart';
-import 'package:carma/data/stances.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:carma/data/karmas.dart';
+import 'package:flutter/foundation.dart';
 
 class Entity {
   final String name;
   Karma karma;
   String currentJudgment;
-  String initalReason;
+  String initialReason;
   List<Deed> deeds = [];
 
-  Entity(this.name, {@required this.karma, this.initalReason}) {
+  Entity(this.name, {@required this.karma, this.initialReason}) {
     this.currentJudgment = this.karma.judge();
   }
 }

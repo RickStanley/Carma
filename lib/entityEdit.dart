@@ -1,10 +1,12 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:carma/data/deed.dart';
 import 'package:carma/data/entity.dart';
 import 'package:carma/data/routesArguments.dart';
-import 'package:carma/data/stances.dart';
+import 'package:carma/data/karmas.dart';
 import 'package:carma/main.dart';
 import 'package:carma/newDeed.dart';
 import 'package:carma/utils/carmaWidgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,102 +19,114 @@ class EntityEdit extends StatefulWidget {
 }
 
 class _EntityEditState extends State<EntityEdit> {
+  final goodKarmaEffect = AssetsAudioPlayer();
+  final badKarmaEffect = AssetsAudioPlayer();
+
+  @override
+  void initState() {
+    goodKarmaEffect.open(
+      Audio("assets/effects/Ui_karma_up.ogg"),
+      autoStart: false,
+    );
+    badKarmaEffect.open(
+      Audio("assets/effects/Ui_karma_down.ogg"),
+      autoStart: false,
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    goodKarmaEffect.dispose();
+    badKarmaEffect.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final EntityEditArguments entityEditArguments =
         ModalRoute.of(context).settings.arguments;
     final entity = entityEditArguments.entity;
+    final entityDeedsReversed = entity.deeds.reversed.toList();
 
     return SafeArea(
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      availableKarmas
-                          .firstWhere(
-                              (karmaCard) => karmaCard.karma == entity.karma)
-                          .karmaIcon,
-                      VerticalDivider(
-                        width: 18.0,
-                      ),
-                      Column(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    EntityCard(
+                      entity,
+                      featured: true,
+                    ),
+                    Visibility(
+                      visible: entity.initialReason != null &&
+                          entity.initialReason.isNotEmpty,
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            entity.name,
-                            style: Theme.of(context).textTheme.headline1,
+                          SizedBox(
+                            height: 30.0,
                           ),
                           Text(
-                            entity.currentJudgment,
-                            style:
-                                Theme.of(context).textTheme.headline4.copyWith(
-                                      color: Color(0xff55585A),
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                            "Initial stance",
+                            style: Theme.of(context).textTheme.headline2,
                           ),
+                          Text(entity.initialReason),
                         ],
                       ),
-                    ],
-                  ),
-                  Visibility(
-                    visible: entity.initalReason != null &&
-                        entity.initalReason.isNotEmpty,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        Text(
-                          "Initial stance",
-                          style: Theme.of(context).textTheme.headline2,
-                        ),
-                        Text(entity.initalReason),
-                      ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  Text(
-                    "Deeds",
-                    style: Theme.of(context).textTheme.headline2,
-                  ),
-                  if (entity.deeds.isNotEmpty)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) =>
-                          DeedCard(
-                        deed: entity.deeds[index],
-                      ),
-                      itemCount: entity.deeds.length,
-                    )
-                  else
-                    Text("No deeds yet."),
-                ],
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    Text(
+                      "Deeds",
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                    if (entity.deeds.isNotEmpty)
+                      // @todo Scroll top when new deed is added.
+                      Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (BuildContext context, int index) =>
+                              DeedCard(
+                            deed: entityDeedsReversed[index],
+                          ),
+                          itemCount: entityDeedsReversed.length,
+                        ),
+                      )
+                    else
+                      Text("No deeds yet."),
+                  ],
+                ),
               ),
-              Positioned(
-                bottom: 0,
-                child: CarmaButton(
+            ),
+            ButtonBar(
+              alignment: MainAxisAlignment.center,
+              children: [
+                CarmaButton(
                   "Add deed",
                   onTap: () async {
                     final Deed deed = await deedsDialog(context, entity);
                     if (deed != null) {
+                      if (deed.karmaType == KarmaType.Good) {
+                        goodKarmaEffect.play();
+                      } else {
+                        badKarmaEffect.play();
+                      }
                       setState(() {
                         entity.deeds.add(deed);
                       });
                     }
                   },
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -129,13 +143,11 @@ class _EntityEditState extends State<EntityEdit> {
         pageBuilder: (BuildContext buildContext, Animation animation,
             Animation secondaryAnimation) {
           KarmaType selectedKarma;
+          var availableDeeds = [];
+          Deed selectedDeed;
+
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              final availableDeeds = Deed.deedsCache
-                  .where((deed) => deed.karmaType == selectedKarma)
-                  .toList();
-
-
               return Center(
                 child: Container(
                   padding: EdgeInsets.all(20),
@@ -163,6 +175,11 @@ class _EntityEditState extends State<EntityEdit> {
                                   notifier: (KarmaType newKarma) {
                                     setState(() {
                                       selectedKarma = newKarma;
+                                      selectedDeed = null;
+                                      availableDeeds = List<Deed>.from(
+                                          Deed.deedsCache.where((deed) {
+                                        return deed.karmaType == selectedKarma;
+                                      }));
                                     });
                                   },
                                   selectedKarma: selectedKarma,
@@ -187,11 +204,26 @@ class _EntityEditState extends State<EntityEdit> {
                                           constraints:
                                               BoxConstraints(maxHeight: 250.0),
                                           child: ListView.builder(
+                                            padding: const EdgeInsets.all(0.0),
                                             shrinkWrap: true,
                                             itemBuilder: (BuildContext context,
                                                     int index) =>
-                                                DeedCard(
-                                              deed: availableDeeds[index],
+                                                GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  selectedDeed =
+                                                      availableDeeds[index];
+                                                });
+                                              },
+                                              child: DeedCard(
+                                                deed: availableDeeds[index],
+                                                color: selectedDeed ==
+                                                        availableDeeds[index]
+                                                    ? Theme.of(context)
+                                                        .primaryColor
+                                                        .withOpacity(0.5)
+                                                    : null,
+                                              ),
                                             ),
                                             itemCount: availableDeeds.length,
                                           ),
@@ -222,9 +254,13 @@ class _EntityEditState extends State<EntityEdit> {
                                                     ),
                                                   );
 
-                                                  if (deed != null && deed is Deed) {
+                                                  if (deed != null &&
+                                                      deed is Deed) {
+                                                    Deed.deedsCache.add(deed);
                                                     Navigator.pop(
-                                                        context, deed);
+                                                      context,
+                                                      deed,
+                                                    );
                                                   }
                                                 },
                                               style: TextStyle(
@@ -248,10 +284,23 @@ class _EntityEditState extends State<EntityEdit> {
                       Material(
                         color: Colors.transparent,
                         child: ButtonBar(
-                          buttonPadding: const EdgeInsets.all(0),
+                          buttonPadding: const EdgeInsets.symmetric(
+                            vertical: 0.0,
+                            horizontal: 10.0,
+                          ),
                           mainAxisSize: MainAxisSize.max,
                           overflowDirection: VerticalDirection.up,
                           children: [
+                            CarmaButton(
+                              "Add deed",
+                              disabled: selectedDeed == null,
+                              onTap: () {
+                                Navigator.pop(
+                                  context,
+                                  selectedDeed,
+                                );
+                              },
+                            ),
                             CarmaButton(
                               "Cancel",
                               outline: true,

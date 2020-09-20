@@ -1,5 +1,5 @@
 import 'package:carma/entityEdit.dart';
-import 'package:carma/entity_setup/setup.dart';
+import 'file:///D:/ent/flutter/carma/lib/entitySetup.dart';
 import 'package:carma/newDeed.dart';
 import 'package:carma/start.dart';
 import 'package:carma/home.dart';
