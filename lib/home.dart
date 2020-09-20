@@ -1,4 +1,5 @@
 import 'package:carma/data/entity.dart';
+import 'package:carma/data/global.dart';
 import 'package:carma/data/routesArguments.dart';
 import 'package:carma/entityEdit.dart';
 import 'package:carma/entitySetup.dart';
@@ -16,8 +17,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final gavelAudioEffect = AssetsAudioPlayer();
-
-  List<Entity> _entities = [];
 
   @override
   void initState() {
@@ -53,17 +52,19 @@ class _HomeState extends State<Home> {
             ListView.separated(
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
-                final currentEntity = _entities[index];
-
+                final currentEntity = Globals.entities[index];
                 return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
+                  onTap: () async {
+                    final entityChanged = await Navigator.pushNamed(
                       context,
                       EntityEdit.ROUTE_NAME,
                       arguments: EntityEditArguments(
                         currentEntity,
                       ),
                     );
+                    if (entityChanged) {
+                      setState(() {});
+                    }
                   },
                   child: EntityCard(currentEntity),
                 );
@@ -74,10 +75,10 @@ class _HomeState extends State<Home> {
                   height: 10.0,
                 );
               },
-              itemCount: _entities.length,
+              itemCount: Globals.entities.length,
             ),
             Visibility(
-              visible: _entities.length != 0,
+              visible: Globals.entities.length != 0,
               child: Divider(
                 height: 10.0,
               ),
@@ -88,7 +89,7 @@ class _HomeState extends State<Home> {
                 if (veredict != null) {
                   gavelAudioEffect.play();
                   setState(() {
-                    _entities.add(Entity(
+                    Globals.entities.add(Entity(
                       veredict.entityName,
                       initialKarma: veredict.karmaStatus,
                       initialReason: veredict.reason,

@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as Math;
 
 import 'package:flutter/foundation.dart';
 
@@ -156,13 +156,56 @@ extension KarmaStatusCore on KarmaStatus {
   }
 }
 
-// @todo implement Karma status meter
 class Karma {
-  final KarmaStatus karmaStatus;
+  KarmaStatus _karmaStatus;
+  String currentJudgment;
+  int _points = 0;
 
-  const Karma({
-    @required this.karmaStatus,
-  });
+  static const int MAX_POINTS_THRESHOLD = 1000;
 
-  judge() => karmaStatus.titles[Random().nextInt(karmaStatus.titles.length)];
+  KarmaStatus get karmaStatus => _karmaStatus;
+
+  set karmaStatus(KarmaStatus karmaStatus) {
+    _karmaStatus = karmaStatus;
+    currentJudgment = this.judge();
+  }
+
+  set points(int points) {
+    int result = _points + points;
+
+    _points = result.isNegative
+        ? Math.max(result, -MAX_POINTS_THRESHOLD)
+        : Math.min(result, MAX_POINTS_THRESHOLD);
+
+    final status = checkStatus(_points);
+
+    if (status != karmaStatus) {
+      karmaStatus = status;
+    }
+  }
+
+  Karma({
+    @required KarmaStatus karmaStatus,
+    this.currentJudgment,
+  }) {
+    _karmaStatus = karmaStatus;
+    currentJudgment ??= this.judge();
+  }
+
+  static KarmaStatus checkStatus(int karmaPoints) {
+    if (karmaPoints >= 750) {
+      return KarmaStatus.VeryGood;
+    } else if (karmaPoints >= 250 && karmaPoints <= 749) {
+      return KarmaStatus.Good;
+    } else if (karmaPoints >= -249 && karmaPoints <= 249) {
+      return KarmaStatus.Neutral;
+    } else if (karmaPoints >= -749 && karmaPoints <= -250) {
+      return KarmaStatus.Evil;
+    } else {
+      return KarmaStatus.VeryEvil;
+    }
+  }
+
+  judge() =>
+      karmaStatus.titles[Math.Random().nextInt(karmaStatus.titles.length)];
 }

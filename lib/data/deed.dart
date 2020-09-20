@@ -7,7 +7,8 @@ class Deed {
   final int points;
   static Set<Deed> deedsCache = Set();
 
-  const Deed(this.karmaStatus, this.description, this.points);
+  const Deed(this.karmaStatus, this.description, int points)
+      : this.points = karmaStatus == KarmaStatus.Good ? points : -points;
 
   @override
   bool operator ==(Object other) {
@@ -19,7 +20,7 @@ class Deed {
   }
 
   get formattedPoints {
-    return "${karmaStatus == KarmaStatus.Good ? "+" : "-"}$points";
+    return "${karmaStatus == KarmaStatus.Good ? "+" : ""}$points";
   }
 
   @override

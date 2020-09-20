@@ -118,7 +118,7 @@ class EntityCard extends StatelessWidget {
                   style: nameStyle,
                 ),
                 Text(
-                  entity.currentJudgment,
+                  entity.karma.currentJudgment,
                   style: judgmentStyle,
                 ),
               ],

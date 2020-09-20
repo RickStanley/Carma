@@ -21,6 +21,7 @@ class EntityEdit extends StatefulWidget {
 class _EntityEditState extends State<EntityEdit> {
   final goodKarmaEffect = AssetsAudioPlayer();
   final badKarmaEffect = AssetsAudioPlayer();
+  bool entityChanged = false;
 
   @override
   void initState() {
@@ -49,83 +50,90 @@ class _EntityEditState extends State<EntityEdit> {
     final entity = entityEditArguments.entity;
     final entityDeedsReversed = entity.deeds.reversed.toList();
 
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    EntityCard(
-                      entity,
-                      featured: true,
-                    ),
-                    Visibility(
-                      visible: entity.initialReason != null &&
-                          entity.initialReason.isNotEmpty,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 30.0,
-                          ),
-                          Text(
-                            "Initial stance",
-                            style: Theme.of(context).textTheme.headline2,
-                          ),
-                          Text(entity.initialReason),
-                        ],
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(context, entityChanged);
+        return Future.value(false);
+      },
+      child: SafeArea(
+        child: Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      EntityCard(
+                        entity,
+                        featured: true,
                       ),
-                    ),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    Text(
-                      "Deeds",
-                      style: Theme.of(context).textTheme.headline2,
-                    ),
-                    if (entity.deeds.isNotEmpty)
-                      Expanded(
-                        child: ListView.builder(
-                          itemBuilder: (BuildContext context, int index) =>
-                              DeedCard(
-                            deed: entityDeedsReversed[index],
-                          ),
-                          itemCount: entityDeedsReversed.length,
+                      Visibility(
+                        visible: entity.initialReason != null &&
+                            entity.initialReason.isNotEmpty,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 30.0,
+                            ),
+                            Text(
+                              "Initial stance",
+                              style: Theme.of(context).textTheme.headline2,
+                            ),
+                            Text(entity.initialReason),
+                          ],
                         ),
-                      )
-                    else
-                      Text("No deeds yet."),
-                  ],
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      Text(
+                        "Deeds",
+                        style: Theme.of(context).textTheme.headline2,
+                      ),
+                      if (entity.deeds.isNotEmpty)
+                        Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (BuildContext context, int index) =>
+                                DeedCard(
+                              deed: entityDeedsReversed[index],
+                            ),
+                            itemCount: entityDeedsReversed.length,
+                          ),
+                        )
+                      else
+                        Text("No deeds yet."),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            ButtonBar(
-              alignment: MainAxisAlignment.center,
-              children: [
-                CarmaButton(
-                  "Add deed",
-                  onTap: () async {
-                    final Deed deed = await deedsDialog(context, entity);
-                    if (deed != null) {
-                      if (deed.karmaStatus == KarmaStatus.Good) {
-                        goodKarmaEffect.play();
-                      } else {
-                        badKarmaEffect.play();
+              ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: [
+                  CarmaButton(
+                    "Add deed",
+                    onTap: () async {
+                      final Deed deed = await deedsDialog(context, entity);
+                      if (deed != null) {
+                        if (deed.karmaStatus == KarmaStatus.Good) {
+                          goodKarmaEffect.play();
+                        } else {
+                          badKarmaEffect.play();
+                        }
+                        setState(() {
+                          entityChanged = true;
+                          entity.addDeedAndUpdateKarma(deed);
+                        });
                       }
-                      setState(() {
-                        entity.deeds.add(deed);
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -177,7 +185,8 @@ class _EntityEditState extends State<EntityEdit> {
                                       selectedDeed = null;
                                       availableDeeds = List<Deed>.from(
                                           Deed.deedsCache.where((deed) {
-                                        return deed.karmaStatus == selectedKarma;
+                                        return deed.karmaStatus ==
+                                            selectedKarma;
                                       }));
                                     });
                                   },
@@ -249,7 +258,8 @@ class _EntityEditState extends State<EntityEdit> {
                                                     context,
                                                     NewDeed.ROUTE_NAME,
                                                     arguments: NewDeedArguments(
-                                                      karmaStatus: selectedKarma,
+                                                      karmaStatus:
+                                                          selectedKarma,
                                                     ),
                                                   );
 

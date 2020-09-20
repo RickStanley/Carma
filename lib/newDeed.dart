@@ -148,10 +148,9 @@ class _NewDeedState extends State<NewDeed> {
                         TextSpan(
                           text: spinnerValue.toStringAsFixed(0),
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
-                            color: deedColor
-                          ),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              color: deedColor),
                         ),
                       ],
                     ),
@@ -179,9 +178,10 @@ class _NewDeedState extends State<NewDeed> {
                       fillColor: Color(0xfff5f5f5),
                       hintText: "Deed description",
                       focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor)),
+                        borderRadius: BorderRadius.zero,
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor),
+                      ),
                       errorText:
                           _validateReason ? "Please enter the reason." : null,
                       border: InputBorder.none,
