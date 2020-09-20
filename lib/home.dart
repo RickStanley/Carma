@@ -87,12 +87,10 @@ class _HomeState extends State<Home> {
                 KingsJusticeResult veredict = await _kingsJustice(context);
                 if (veredict != null) {
                   gavelAudioEffect.play();
-                  print(
-                      "Karma: ${veredict.karma.typeName} | Entity name: ${veredict.entityName}");
                   setState(() {
                     _entities.add(Entity(
                       veredict.entityName,
-                      karma: veredict.karma,
+                      initialKarma: veredict.karmaStatus,
                       initialReason: veredict.reason,
                     ));
                   });

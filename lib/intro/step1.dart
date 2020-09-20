@@ -82,7 +82,7 @@ class IntroStep1 extends StatelessWidget {
                     EntityCard(
                       Entity(
                         "Julius Caesar",
-                        karma: karmas.first,
+                        initialKarma: KarmaStatus.Good,
                       ),
                     )
                   ],

@@ -100,7 +100,8 @@ class EntityCard extends StatelessWidget {
             // @todo Maybe this will fail at some point, because hashCode is not reliable to be unique
             tag: entity.hashCode.toString(),
             child: availableKarmas
-                .firstWhere((karmaCard) => karmaCard.karma == entity.karma)
+                .firstWhere((karmaCard) =>
+                    karmaCard.karmaStatus == entity.karma.karmaStatus.prime)
                 .karmaIcon,
           ),
           VerticalDivider(
@@ -170,12 +171,12 @@ class EntityCardEmpty extends StatelessWidget {
 // @todo Merge layout of "EntityType" and "EntityEmpty" with "EntityCard"
 class EntityCardType extends StatelessWidget {
   final SvgPicture karmaIcon;
-  final Karma karma;
+  final KarmaStatus karmaStatus;
 
   const EntityCardType({
     Key key,
     @required this.karmaIcon,
-    @required this.karma,
+    @required this.karmaStatus,
   }) : super(key: key);
 
   @override
@@ -190,11 +191,11 @@ class EntityCardType extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              this.karma.typeName,
+              this.karmaStatus.name,
               style: Theme.of(context).textTheme.headline3,
             ),
             Text(
-              this.karma.description,
+              this.karmaStatus.description,
               style: TextStyle(
                 color: Color(0xff55585A),
               ),
@@ -207,14 +208,14 @@ class EntityCardType extends StatelessWidget {
 }
 
 var availableKarmas = List<EntityCardType>.unmodifiable([
-  for (var carma in karmas)
+  for (var karmaType in KarmaStatusCore.primeKarmas)
     EntityCardType(
       karmaIcon: SvgPicture.asset(
-        "assets/karmas/${carma.typeName.toLowerCase()}.svg",
+        "assets/karmas/${karmaType.name}.svg",
         width: 52.0,
         height: 38.39,
       ),
-      karma: carma,
+      karmaStatus: karmaType,
     )
 ]);
 
@@ -282,8 +283,8 @@ class RuleOfTwo extends StatelessWidget {
   final Size iconSize;
   final double gapSize;
   final TextStyle labelStyle;
-  final Function(KarmaType) notifier;
-  final KarmaType selectedKarma;
+  final Function(KarmaStatus) notifier;
+  final KarmaStatus selectedKarma;
 
   const RuleOfTwo({
     Key key,
@@ -303,7 +304,7 @@ class RuleOfTwo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SvgPicture.asset(
-          "assets/karmas/good.svg",
+          "assets/karmas/Good.svg",
           width: iconSize?.width,
           height: iconSize?.height,
           fit: BoxFit.contain,
@@ -321,7 +322,7 @@ class RuleOfTwo extends StatelessWidget {
     final evilColumn = Column(
       children: [
         SvgPicture.asset(
-          "assets/karmas/evil.svg",
+          "assets/karmas/Evil.svg",
           width: iconSize?.width,
           height: iconSize?.height,
           fit: BoxFit.contain,
@@ -342,12 +343,12 @@ class RuleOfTwo extends StatelessWidget {
         hasNotifier
             ? GestureDetector(
                 onTap: () {
-                  notifier(KarmaType.Good);
+                  notifier(KarmaStatus.Good);
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
                 child: Container(
                   padding: const EdgeInsets.all(5.0),
-                  color: selectedKarma == KarmaType.Good
+                  color: selectedKarma == KarmaStatus.Good
                       ? Theme.of(context).primaryColor.withOpacity(0.5)
                       : Colors.transparent,
                   child: goodColumn,
@@ -360,11 +361,11 @@ class RuleOfTwo extends StatelessWidget {
         hasNotifier
             ? GestureDetector(
                 onTap: () {
-                  notifier(KarmaType.Evil);
+                  notifier(KarmaStatus.Evil);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(5.0),
-                  color: selectedKarma == KarmaType.Evil
+                  color: selectedKarma == KarmaStatus.Evil
                       ? Theme.of(context).primaryColor.withOpacity(0.5)
                       : Colors.transparent,
                   child: evilColumn,
@@ -388,7 +389,7 @@ class DeedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pointsColor = deed.karmaType == KarmaType.Evil
+    final pointsColor = deed.karmaStatus == KarmaStatus.Evil
         ? Color(0xffD04747)
         : Color(0xff008028);
 

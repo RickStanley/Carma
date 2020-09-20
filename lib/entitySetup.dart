@@ -20,7 +20,7 @@ class _EntitySetupState extends State<EntitySetup> {
 
   bool _validateName = false;
   bool _validateEntityType = false;
-  Karma _selectedKarma;
+  KarmaStatus _selectedKarma;
   int _textFieldHeight = 1;
 
   String heroTag;
@@ -69,7 +69,7 @@ class _EntitySetupState extends State<EntitySetup> {
                               ? availableKarmas
                                   .firstWhere(
                                     (karmaCard) =>
-                                        karmaCard.karma == _selectedKarma,
+                                        karmaCard.karmaStatus == _selectedKarma,
                                   )
                                   .karmaIcon
                               : SvgPicture.asset(
@@ -124,13 +124,13 @@ class _EntitySetupState extends State<EntitySetup> {
                           GestureDetector(
                         onTap: () => {
                           setState(() {
-                            _selectedKarma = availableKarmas[index].karma;
+                            _selectedKarma = availableKarmas[index].karmaStatus;
                             _validateEntityType = false;
                           })
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 6.0),
-                          color: _selectedKarma == availableKarmas[index].karma
+                          color: _selectedKarma == availableKarmas[index].karmaStatus
                               ? DA_COLOR.withOpacity(0.4)
                               : Colors.transparent,
                           child: availableKarmas[index],
@@ -162,8 +162,8 @@ class _EntitySetupState extends State<EntitySetup> {
                       height: 26.0,
                     ),
                     Visibility(
-                      visible: _selectedKarma?.type == KarmaType.Good ||
-                          _selectedKarma?.type == KarmaType.Evil,
+                      visible: _selectedKarma == KarmaStatus.Good ||
+                          _selectedKarma == KarmaStatus.Evil,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -180,7 +180,7 @@ class _EntitySetupState extends State<EntitySetup> {
                               text: "Care to explain why this entity is ",
                               children: [
                                 TextSpan(
-                                  text: _selectedKarma?.typeName,
+                                  text: _selectedKarma?.name,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),

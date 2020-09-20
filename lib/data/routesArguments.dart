@@ -3,11 +3,11 @@ import 'package:carma/data/entity.dart';
 import 'karmas.dart';
 
 class KingsJusticeResult {
-  final Karma karma;
+  final KarmaStatus karmaStatus;
   final String entityName;
   final String reason;
 
-  const KingsJusticeResult(this.karma, this.entityName, this.reason);
+  const KingsJusticeResult(this.karmaStatus, this.entityName, this.reason);
 }
 
 class EntityEditArguments {
@@ -17,7 +17,7 @@ class EntityEditArguments {
 }
 
 class NewDeedArguments {
-  final KarmaType karmaType;
+  final KarmaStatus karmaStatus;
 
-  const NewDeedArguments({this.karmaType});
+  const NewDeedArguments({this.karmaStatus});
 }

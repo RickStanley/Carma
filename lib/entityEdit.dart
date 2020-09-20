@@ -113,7 +113,7 @@ class _EntityEditState extends State<EntityEdit> {
                   onTap: () async {
                     final Deed deed = await deedsDialog(context, entity);
                     if (deed != null) {
-                      if (deed.karmaType == KarmaType.Good) {
+                      if (deed.karmaStatus == KarmaStatus.Good) {
                         goodKarmaEffect.play();
                       } else {
                         badKarmaEffect.play();
@@ -142,7 +142,7 @@ class _EntityEditState extends State<EntityEdit> {
         transitionDuration: const Duration(milliseconds: 200),
         pageBuilder: (BuildContext buildContext, Animation animation,
             Animation secondaryAnimation) {
-          KarmaType selectedKarma;
+          KarmaStatus selectedKarma;
           var availableDeeds = [];
           Deed selectedDeed;
 
@@ -172,13 +172,13 @@ class _EntityEditState extends State<EntityEdit> {
                                 RuleOfTwo(
                                   labelStyle:
                                       Theme.of(context).textTheme.headline4,
-                                  notifier: (KarmaType newKarma) {
+                                  notifier: (KarmaStatus newKarma) {
                                     setState(() {
                                       selectedKarma = newKarma;
                                       selectedDeed = null;
                                       availableDeeds = List<Deed>.from(
                                           Deed.deedsCache.where((deed) {
-                                        return deed.karmaType == selectedKarma;
+                                        return deed.karmaStatus == selectedKarma;
                                       }));
                                     });
                                   },
@@ -250,7 +250,7 @@ class _EntityEditState extends State<EntityEdit> {
                                                     context,
                                                     NewDeed.ROUTE_NAME,
                                                     arguments: NewDeedArguments(
-                                                      karmaType: selectedKarma,
+                                                      karmaStatus: selectedKarma,
                                                     ),
                                                   );
 

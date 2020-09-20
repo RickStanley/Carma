@@ -9,7 +9,8 @@ class Entity {
   String initialReason;
   List<Deed> deeds = [];
 
-  Entity(this.name, {@required this.karma, this.initialReason}) {
+  Entity(this.name, {@required KarmaStatus initialKarma, this.initialReason}) {
+    this.karma = Karma(karmaStatus: initialKarma);
     this.currentJudgment = this.karma.judge();
   }
 }

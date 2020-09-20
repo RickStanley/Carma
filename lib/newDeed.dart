@@ -21,7 +21,7 @@ class _NewDeedState extends State<NewDeed> {
 
   bool _validateReason = false;
   double spinnerValue = 1.0;
-  KarmaType selectedKarma;
+  KarmaStatus selectedKarma;
   Color deedColor;
 
   @override
@@ -35,9 +35,9 @@ class _NewDeedState extends State<NewDeed> {
     final NewDeedArguments arguments =
         ModalRoute.of(context).settings.arguments;
 
-    selectedKarma ??= arguments.karmaType;
+    selectedKarma ??= arguments.karmaStatus;
 
-    deedColor = selectedKarma == KarmaType.Evil
+    deedColor = selectedKarma == KarmaStatus.Evil
         ? Color(0xffD04747)
         : Color(0xff008028);
 
@@ -69,7 +69,7 @@ class _NewDeedState extends State<NewDeed> {
                   ),
                   RuleOfTwo(
                     labelStyle: Theme.of(context).textTheme.headline4,
-                    notifier: (KarmaType newKarma) {
+                    notifier: (KarmaStatus newKarma) {
                       setState(() {
                         selectedKarma = newKarma;
                       });
@@ -135,7 +135,7 @@ class _NewDeedState extends State<NewDeed> {
                       text: "The weight of this ",
                       children: [
                         TextSpan(
-                          text: selectedKarma == KarmaType.Good
+                          text: selectedKarma == KarmaStatus.Good
                               ? "bless"
                               : "treason",
                           style: TextStyle(
@@ -160,7 +160,7 @@ class _NewDeedState extends State<NewDeed> {
                     height: 15.0,
                   ),
                   Text(
-                    "What ${selectedKarma == KarmaType.Good ? "bless" : "treachery"} is this?",
+                    "What ${selectedKarma == KarmaStatus.Good ? "bless" : "treachery"} is this?",
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   SizedBox(
@@ -196,7 +196,7 @@ class _NewDeedState extends State<NewDeed> {
           ButtonBar(
             children: [
               CarmaButton(
-                "Add ${selectedKarma == KarmaType.Good ? "bless" : "treason"}",
+                "Add ${selectedKarma == KarmaStatus.Good ? "bless" : "treason"}",
                 onTap: () {
                   if (_textFieldController.text.isEmpty) {
                     setState(() {
