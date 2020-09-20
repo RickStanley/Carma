@@ -90,6 +90,11 @@ class EntityCard extends StatelessWidget {
         : TextStyle(
             color: Color(0xff55585A),
           );
+    final icon = SvgPicture.asset(
+      "assets/karmas/${entity.karma.karmaStatus.prime.name}.svg",
+      width: featured ? 50.0 : 39.0,
+      height: featured ? 67.72 : 52.82,
+    );
     return Container(
       padding: padding,
       color: bgColor,
@@ -99,10 +104,7 @@ class EntityCard extends StatelessWidget {
           Hero(
             // @todo Maybe this will fail at some point, because hashCode is not reliable to be unique
             tag: entity.hashCode.toString(),
-            child: availableKarmas
-                .firstWhere((karmaCard) =>
-                    karmaCard.karmaStatus == entity.karma.karmaStatus.prime)
-                .karmaIcon,
+            child: icon,
           ),
           VerticalDivider(
             width: spaceBetweenTitles,
@@ -146,8 +148,8 @@ class EntityCardEmpty extends StatelessWidget {
             tag: "entity-icon",
             child: SvgPicture.asset(
               "assets/generic_icons/selection_user.svg",
-              width: 50.0,
-              height: 50.0,
+              width: 39.0,
+              height: 39.0,
             ),
           ),
           SizedBox(
@@ -212,8 +214,8 @@ var availableKarmas = List<EntityCardType>.unmodifiable([
     EntityCardType(
       karmaIcon: SvgPicture.asset(
         "assets/karmas/${karmaType.name}.svg",
-        width: 52.0,
-        height: 38.39,
+        width: 39.0,
+        height: 52.82,
       ),
       karmaStatus: karmaType,
     )

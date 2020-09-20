@@ -49,6 +49,11 @@ class _EntitySetupState extends State<EntitySetup> {
 
   @override
   Widget build(BuildContext context) {
+    final iconPath = _selectedKarma != null
+        ? "assets/karmas/${_selectedKarma.name}.svg"
+        : "assets/generic_icons/selection_user.svg";
+    final icon = SvgPicture.asset(iconPath, width: 50.0, height: 50.0);
+
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -65,18 +70,7 @@ class _EntitySetupState extends State<EntitySetup> {
                       children: [
                         Hero(
                           tag: heroTag ?? "entity-icon",
-                          child: _selectedKarma != null
-                              ? availableKarmas
-                                  .firstWhere(
-                                    (karmaCard) =>
-                                        karmaCard.karmaStatus == _selectedKarma,
-                                  )
-                                  .karmaIcon
-                              : SvgPicture.asset(
-                                  "assets/generic_icons/selection_user.svg",
-                                  width: 50.0,
-                                  height: 50.0,
-                                ),
+                          child: icon,
                         ),
                         VerticalDivider(
                           width: 18.0,
@@ -130,7 +124,8 @@ class _EntitySetupState extends State<EntitySetup> {
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 6.0),
-                          color: _selectedKarma == availableKarmas[index].karmaStatus
+                          color: _selectedKarma ==
+                                  availableKarmas[index].karmaStatus
                               ? DA_COLOR.withOpacity(0.4)
                               : Colors.transparent,
                           child: availableKarmas[index],

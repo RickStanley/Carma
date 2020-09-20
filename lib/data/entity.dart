@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 
 class Entity {
   final String name;
+  final String initialReason;
   Karma karma;
   String currentJudgment;
-  String initialReason;
   List<Deed> deeds = [];
 
   Entity(this.name, {@required KarmaStatus initialKarma, this.initialReason}) {

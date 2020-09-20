@@ -89,7 +89,6 @@ class _EntityEditState extends State<EntityEdit> {
                       style: Theme.of(context).textTheme.headline2,
                     ),
                     if (entity.deeds.isNotEmpty)
-                      // @todo Scroll top when new deed is added.
                       Expanded(
                         child: ListView.builder(
                           itemBuilder: (BuildContext context, int index) =>
